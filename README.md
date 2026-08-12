@@ -17,9 +17,26 @@ The project uses four source tables:
 
 The raw source files are stored locally under `data/raw/` and are not committed to the repository.
 
-### Raw Data Layer
+## Business Questions
 
-The source data is loaded into PostgreSQL without analytical transformations.
+- Are highly engaged users less likely to churn?
+- Does subscription behavior differ between churned and retained users?
+- Which customer segments have the highest churn?
+- Is recent listening activity associated with churn?
+
+## Pipeline
+
+### Phase 1 — Data Exploration
+
+- Documented the source tables, fields, and their grains.
+- Profiled row counts, date ranges, churn distribution, missing values, duplicates, and invalid values.
+- Identified data-quality issues before transformation.
+
+### Phase 2 — Data Preparation
+
+#### Raw Layer
+
+Source data is preserved in PostgreSQL with minimal transformation:
 
 ```text
 PostgreSQL
@@ -29,33 +46,58 @@ PostgreSQL
         ├── members
         ├── transactions
         └── user_logs
+````
+
+A reproducible Python loader is provided at:
+
+```text
+src/load/load_raw.py
 ```
 
-The raw layer preserves the source-level structure and values. A reproducible Python loader is provided under `src/load/load_raw.py`.
+#### Staging Layer
 
-## Business Questions
+Source tables are converted into consistently typed staging tables:
 
-* Are highly engaged users less likely to churn?
-* Does subscription behavior differ between churned and retained users?
-* Which customer segments have the highest churn?
-* Is recent listening activity associated with churn?
+```text
+raw.*
+   ↓
+staging.*
+```
 
-## Pipeline
+The staging layer standardizes dates, boolean flags, column representations, and other source-level data types while preserving the source-level grain.
 
-### Phase 1 — Raw Data Exploration
+#### Validation
 
-* Documented source tables and fields.
-* Profiled row counts, dates, churn distribution, missing values, duplicates, grain, and invalid values.
-* Identified data-quality issues before transformation.
+Automated SQL validation checks the staging data for:
 
-### Phase 2 — Data Preparation
+* missing required keys
+* unexpected duplicate keys
+* invalid dates
+* invalid churn/flag values
+* impossible numeric values
+* unexpected cross-table relationships
 
-* Raw source data loaded into PostgreSQL.
-* Staging and analytical transformations will be added next.
+Relationship coverage warnings are retained rather than silently discarding affected users.
 
 ## Data Model
 
-*To be documented as the staging and analytical layers are built.*
+The analytical model uses explicit grains and separates descriptive
+dimensions from measurable fact tables.
+
+- `dim_user` — one row per user
+- `dim_date` — one row per calendar date
+- `fact_churn` — one row per labelled user
+- `fact_subscription` — one row per subscription/payment transaction
+- `fact_listening` — one row per user per calendar day
+
+Transaction and listening data are aggregated to the user level before
+being combined for customer-level churn analysis.
+
+See [`docs/analytical_model.md`](docs/analytical_model.md) for the grain
+definitions and modelling decisions.
+
+See [`docs/data_model.md`](docs/data_model.md) for the ERD, keys,
+relationships, and fact/dimension design.
 
 ## Analysis
 
@@ -72,4 +114,3 @@ The raw layer preserves the source-level structure and values. A reproducible Py
 ## Limitations
 
 *To be documented after analysis.*
-
