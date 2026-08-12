@@ -54,6 +54,9 @@ A reproducible Python loader is provided at:
 src/load/load_raw.py
 ```
 
+The full reproducible Python/Pandas ETL pipeline will be completed before
+the Power BI layer.
+
 #### Staging Layer
 
 Source tables are converted into consistently typed staging tables:
@@ -101,16 +104,25 @@ relationships, and fact/dimension design.
 
 ## Analysis
 
-*To be completed.*
+The analysis uses SQL to investigate the four business questions:
+
+- Engagement and churn
+- Subscription behaviour and churn
+- Customer segment differences
+- Recent listening activity and churn
+
+The SQL analysis uses multi-table joins, CTEs, CASE-based classifications,
+and window functions while preserving the intended analytical grain.
+
+The detailed business-question analysis is documented in
+`docs/business_questions.md`.
 
 ## Dashboard
 
 *To be completed.*
 
 ## Findings
-
-*To be completed.*
+*To be documented in Phase 6.*
 
 ## Limitations
-
-*To be documented after analysis.*
+*To be documented alongside the findings after the analysis.*
