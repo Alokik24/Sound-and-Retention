@@ -149,8 +149,9 @@ The churn outcome is represented by `is_churn`.
 
 Transaction and listening facts remain at their natural grains.
 
-For customer-level churn analysis, they will first be aggregated to the
-user grain and then combined with `dim_user` and `fact_churn`.
+For customer-level churn analysis, transaction and listening facts are
+aggregated to the user grain and then combined with `dim_user` and
+`fact_churn`.
 
 This prevents one-to-many joins between transactions and listening
 records from multiplying rows and producing incorrect aggregates.
@@ -162,9 +163,9 @@ source tables. Relationship validation identified missing member
 records for approximately 11.33% of churn-labelled users and 9.99% of
 transaction users, while only 40 listening users were absent.
 
-Therefore, the final analytical population and join strategy must be
-defined explicitly rather than assuming that `members` is a complete
-master user table.
+Therefore, the analytical population is not restricted to users present
+in `members`. The model retains the relevant user population and
+populates member attributes where available.
 
 ```text
                          ┌──────────────┐

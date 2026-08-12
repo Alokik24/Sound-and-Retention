@@ -81,22 +81,23 @@ This anonymized identifier allows customer-level information, subscription activ
 
 ## Derived Analytical Features
 
-The raw fields above may later be aggregated or transformed into user-level analytical features.
+The raw fields above are transformed and/or aggregated into user-level
+features used in the SQL analysis.
 
 Examples include:
 
 - `listening_days`
-- `total_songs`
-- `unique_songs`
-- `total_listening_seconds`
-- `average_daily_listening`
-- `recent_listening_days`
+- `total_unique_songs`
+- `total_listening_secs`
 - `transaction_count`
-- `subscription_duration`
-- `days_since_last_transaction`
-- `days_until_expiry`
+- `total_amount_paid`
+- `avg_amount_paid`
+- `total_plan_days`
+- `auto_renew_transactions`
+- `cancelled_transactions`
 
-These are **not source columns**. They will be created during the transformation and analysis stages.
+These are not source columns. They are derived during the analytical
+transformation and SQL analysis stages.
 
 ---
 

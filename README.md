@@ -54,8 +54,9 @@ A reproducible Python loader is provided at:
 src/load/load_raw.py
 ```
 
-The full reproducible Python/Pandas ETL pipeline will be completed before
-the Power BI layer.
+The reproducible Python/Pandas ETL pipeline handles extraction,
+transformation, validation, and loading before the analytical and
+Power BI layers.
 
 #### Staging Layer
 
@@ -71,16 +72,43 @@ The staging layer standardizes dates, boolean flags, column representations, and
 
 #### Validation
 
-Automated SQL validation checks the staging data for:
+The Python ETL performs source-level validation for:
 
-* missing required keys
-* unexpected duplicate keys
-* invalid dates
-* invalid churn/flag values
-* impossible numeric values
-* unexpected cross-table relationships
+- required columns
+- missing required keys
+- unexpected duplicate keys
+- invalid dates
+- invalid churn/flag values
+- impossible numeric values
 
-Relationship coverage warnings are retained rather than silently discarding affected users.
+PostgreSQL performs complete-dataset grain and cross-table relationship
+checks that depend on the relational dataset.
+
+Relationship coverage warnings are retained rather than silently
+discarding affected users.
+
+The preparation flow is:
+
+```text
+data/raw/
+   ↓
+Python/Pandas
+   ├── Extract
+   ├── Transform
+   ├── Validate
+   └── Load
+   ↓
+PostgreSQL
+   ├── raw.*
+   ├── staging.*
+   └── analytics.*
+   ↓
+SQL Analysis
+   ↓
+Findings
+   ↓
+Power BI
+```
 
 ## Data Model
 
@@ -122,7 +150,36 @@ The detailed business-question analysis is documented in
 *To be completed.*
 
 ## Findings
-*To be documented in Phase 6.*
+
+The analysis identified several patterns associated with churn:
+
+- Lower listening engagement was associated with higher observed churn.
+- Less recent listening activity was strongly associated with higher
+  observed churn, with the highest observed rate among users whose last
+  listening activity was 15–30 days earlier.
+- Churned users showed substantially lower auto-renewal activity and
+  higher cancellation activity than retained users.
+- Churn rates varied substantially across registration methods and
+  geographic segments.
+
+These findings are observational associations and do not establish
+causation.
+
+Detailed evidence, interpretation, and limitations are documented in
+`docs/findings.md`.
 
 ## Limitations
-*To be documented alongside the findings after the analysis.*
+
+- The analysis identifies associations rather than causal relationships.
+- Engagement categories are analytical groupings rather than validated
+  business thresholds.
+- Some churn-labelled users do not have corresponding records in the
+  members source table, so member attributes are not available for the
+  entire labelled population.
+- The dataset and observation period limit what can be inferred about
+  customer behaviour outside the available records.
+- Segment-level differences may reflect underlying differences in
+  customer composition that were not controlled for in this analysis.
+
+Detailed limitations are documented alongside the findings in
+`docs/findings.md`.
