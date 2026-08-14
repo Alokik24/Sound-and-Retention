@@ -4,6 +4,11 @@
 
 A music-streaming company wants to understand which listening and subscription behaviors are associated with customer churn so that retention teams can identify higher-risk customer segments.
 
+## Dashboard
+The dashboard presents churn and retention KPIs, engagement patterns, subscription behaviour, and customer-segment comparisons, with interactive filters for exploration.
+
+![Power BI Dashboard](dashboard.png)
+
 ## Dataset
 
 Source: KKBox customer churn dataset, obtained from Kaggle.
@@ -144,10 +149,6 @@ and window functions while preserving the intended analytical grain.
 
 The detailed business-question analysis is documented in
 `docs/business_questions.md`.
-
-## Dashboard
-
-*To be completed.*
 
 ## Findings
 
